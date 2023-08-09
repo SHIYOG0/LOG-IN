@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Black_colour.jpg/800px-Black_colour.jpg");
+        background-size: cover;
+        color: #FFAD00; /* Font color */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      h2 {
+        text-align: center;
+      }
+
+      .login-container {
+        background-image: url("https://img.freepik.com/premium-photo/white-recycle-kraft-paper-cardboard-surface-texture-background_293060-11929.jpg");
+        background-size: cover; /* Box background color */
+        padding: 30px;
+        border-radius: 30px;
+        width: 100%;
+        max-width: 350px;
+      }
+
+      h1 {
+        color: #006366; /* Heading color */
+        margin-top: -10px;
+        margin-bottom: 30px;
+      }
+
+      .message {
+        color: #00ff00; /* Success message color */
+      }
+
+      .error {
+        color: #ffffff; /* Error message color */
+      }
+
+      .loading {
+        display: none;
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(0, 255, 0, 0.2);
+        border-top: 5px solid #000000;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+
+      .login-button {
+        background-color: #202A44; /* Button background color */
+        color: white;
+        padding: 10px 30px;
+        text-align: center;
+        text-decoration: none;
+        display: block;
+        font-size: 18px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .login-button:hover {
+        background-color: #0DBFB3; /* Button background color on hover */
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        background-color: #FFFF;
+        border: 3px solid #006366;
+        border-radius: 20px;
+        padding: 3px;
+        margin-bottom: 10px;
+        width: 50%;
+        font-size: 16px;
+        color: #ff0000;
+      }
+
+      .password-toggle {
+        display: flex;
+        justify-content: flex-end;
+        font-size: 14px;
+        color: #006366;
+        margin-bottom: 10px;
+      }
+
+      .password-toggle label {
+        margin-left: 5px;
+      }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="login-container">
+      <h1>LOGIN</h1>
+      <form id="loginForm">
+        <h3>
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required /><br /><br />
+
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required /><br /><br />
+
+          <div class="password-toggle">
+            <input type="checkbox" id="showPassword" />
+            <label for="showPassword">Show Password</label>
+          </div>
+        </h3>
+        <input type="submit" value="Login" class="login-button" />
+        <div id="message" class="error"></div> <!-- Added message element -->
+      </form>
+      <div class="loading"></div>
+    </div>
+
+    <script>
+      document.getElementById("loginForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        showLoading(); // Show loading icon
+        verifyLogin(username, password);
+      });
+
+      document.getElementById("showPassword").addEventListener("change", function (e) {
+        var passwordInput = document.getElementById("password");
+        passwordInput.type = e.target.checked ? "text" : "password";
+      });
+
+      function showLoading() {
+        document.querySelector(".loading").style.display = "block";
+      }
+
+      function hideLoading() {
+        document.querySelector(".loading").style.display = "none";
+      }
+
+      function verifyLogin(username, password) {
+        var googleSheetURL =
+          "https://docs.google.com/spreadsheets/d/1U4GsBEbwbNlud2UlPwSGeoQcp69BnG7sCJuFlDUxE0g/edit#gid=0";
+        var sheetName = "HTML";
+        var url =
+          "https://script.google.com/macros/s/AKfycbxrFzmNkH0SooejFT0PVuYXv0bfKeKPZLU3DVsmqFoLK3DqRDUTFtAocerBV9xL9Ex7/exec";
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            hideLoading(); // Hide loading icon
+
+            if (xhr.status === 200) {
+              var response = xhr.responseText;
+              if (response === "success") {
+                window.open("https://sites.google.com/view/my-ord/home");
+              } else {
+                // Show "Not Match" message
+                document.getElementById("message").textContent = "Not Match";
+              }
+            } else {
+              alert("Error occurred while processing the request.");
+            }
+          }
+        };
+
+        var data =
+          "username=" +
+          encodeURIComponent(username) +
+          "&password=" +
+          encodeURIComponent(password) +
+          "&googleSheetURL=" +
+          encodeURIComponent(googleSheetURL) +
+          "&sheetName=" +
+          encodeURIComponent(sheetName);
+        xhr.send(data);
+      }
+    </script>
+  </body>
+</html>
